@@ -14,27 +14,13 @@ const state = {
   filter: ''
 };
 
-
 const TodoList = () => {
-
   const [obj, setObj] = useState({ ...state });
-
-  useEffect(() => {
-    const prevContact = localStorage.getItem('contacts')
-    if (prevContact) {
-      setObj(prev => ({ ...prev, contacts: [JSON.parse(prevContact)] }));
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(obj.contacts))
-  });
 
   const inputFilter = ({ target }) => {
     const { value, name } = target;
     setObj(prev => ({ ...prev, [name]: value }))
   };
-
   const delContact = (id) => {
     const contacts = obj.contacts.filter((el) => el.id !== id)
     setObj((prev) => ({ ...prev, contacts }))
@@ -45,12 +31,30 @@ const TodoList = () => {
   }
 
   const filterTask = vissbleTask()
+  const addContact = (user) => {
+    if (obj.contacts.some(el => el.name === user.name)) {
+      alert(`${user.name} уже записанно, введите другое имя!`)
+    } else {
+      setObj(prev => ({ ...prev, contacts: [...prev.contacts, { id: uuidv4(), ...user }] }));
+    }
+  };
+
+  useEffect(() => {
+    const prevContact = localStorage.getItem('contacts')
+    if (prevContact) {
+      setObj(prev => ({ ...prev, contacts: [JSON.parse(prevContact)] }));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(obj.contacts))
+  }, [state.contacts]);
 
   return (
     <>
       <div>
         <h1>Phonebook</h1>
-        <ContactForm setObj={setObj} obj={obj} />
+        <ContactForm addContact={addContact} />
 
         <h2>Contacts</h2>
         <Filter inputHandlerFilter={inputFilter} filter={obj.filter} />
