@@ -16,7 +16,33 @@ const state = {
 
 const TodoList = () => {
   const [obj, setObj] = useState({ ...state });
+  // useEffect(()=>{
+  //   const prevContact = localStorage.getItem('contacts');
+  //   const res=JSON.parse(prevContact)
+  //   console.log(res);
+  //   setObj(prev => ({ ...prev, contacts: [JSON.parse(prevContact)] }))
+  // })
+    // useEffect(() => {
+    //   const prevContact = localStorage.getItem('contacts')
+    //   const parsContacts = JSON.parse(prevContact)
+    //   if (prevContact) {
+    //     setObj(prev => ({ ...prev, contacts: [...parsContacts] })) 
+    //   }
+    // }, []);
 
+    useEffect(()=>{
+      const prevContact = localStorage.getItem('contacts');
+        const res=JSON.parse(prevContact);
+        console.log(res);
+        setObj(prev => ({...prev, contacts: res}))
+    },[])
+    
+    useEffect(() => {
+      localStorage.setItem('contacts', JSON.stringify(obj.contacts))
+    },[obj.contacts]);
+
+    
+  
   const inputFilter = ({ target }) => {
     const { value, name } = target;
     setObj(prev => ({ ...prev, [name]: value }))
@@ -31,24 +57,18 @@ const TodoList = () => {
   }
 
   const filterTask = vissbleTask()
-  const addContact = (user) => {
+  const addContact = async(user) => {
     if (obj.contacts.some(el => el.name === user.name)) {
       alert(`${user.name} уже записанно, введите другое имя!`)
     } else {
-      setObj(prev => ({ ...prev, contacts: [...prev.contacts, { id: uuidv4(), ...user }] }));
+      console.log(obj.contacts);
+     setObj(prev => ({ ...prev, contacts: [...prev.contacts, { id: uuidv4(), ...user }] }));
+          localStorage.setItem('contacts', JSON.stringify(obj.contacts))
+              
+
     }
   };
 
-  useEffect(() => {
-    const prevContact = localStorage.getItem('contacts')
-    if (prevContact) {
-      setObj(prev => ({ ...prev, contacts: [JSON.parse(prevContact)] }));
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(obj.contacts))
-  }, [state.contacts]);
 
   return (
     <>
